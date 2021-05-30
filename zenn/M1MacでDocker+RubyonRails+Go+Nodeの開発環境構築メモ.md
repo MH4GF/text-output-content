@@ -102,14 +102,14 @@ mas 'LINE', id: 539_883_307
 
 まずbrew経由でのインストールで失敗したのはsaml2awsのみでした。
 とはいえど後述するGoのセットアップが終わった後リポジトリをcloneしてきて `make install` を打てば解決しました。
-このように、ある程度一般的なソフトウェアはM1環境でもインストール自体はできるものと思っていいのかなと思います。僕もここでかなり詰まるだろうと想定していたので意外でした。
+このように、ある程度一般的なソフトウェアはM1環境でもインストール自体はできるものと思って良さそうです。僕もここでかなり詰まるだろうと想定していたので意外でした。
 
 ### ソフトウェアの実行やRosetta2周り
 
 上記でインストールしたソフトウェアのうち、起動・実行に失敗したものもありませんでした。もちろんIntel版しか対応していないソフトウェアについては起動時にRosetta2をインストールする必要はあります。
 
 また、ソフトウェアの公式ホームページ等ではApple Silicon版の対応バイナリがあるのに、brew経由でインストールした場合Intel版がインストールされてしまった、ということもよくあります。
-これはHomebrewやHomebrew-caskがApple Silicon版への対応ができていないかもしれません。今回RubyMineの修正対応でPull Requestを出してみましたがすぐにマージされました。修正はそこまで難しくなかったため、使っているソフトウェアがbrewで対応していなかった場合はぜひPull Requestを出してみてください。
+これはHomebrewやHomebrew-caskでApple Silicon版への対応ができていない場合があります。今回RubyMineの修正対応でPull Requestを出してみましたがすぐにマージされました。修正はそこまで難しくなかったため、使っているソフトウェアがbrewで対応していなかった場合はぜひPull Requestを出してみてください。
 
 https://github.com/Homebrew/homebrew-cask/pull/105117
 
@@ -161,7 +161,7 @@ ERROR: no matching manifest for linux/arm64/v8 in the manifest list entries
 
 > the mysql image is not available for ARM64. You can work around this issue by using a mariadb image.
 
-こちらについてはdocker-compose.ymlのserviceにて `platform: linux/x86_64` を追加することでpullと起動に成功しました。
+こちらについてはdocker-compose.ymlのserviceにて `platform: linux/x86_64` を追加することでpullと起動に成功しました。  
 https://stackoverflow.com/questions/65456814/docker-apple-silicon-m1-preview-mysql-no-matching-manifest-for-linux-arm64-v8
 
 ## rails server起動後、アクセス時に symbol lookup errorが出る
