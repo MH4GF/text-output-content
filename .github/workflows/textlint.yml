@@ -39,7 +39,7 @@ jobs:
           echo "$(curl -fsSL https://raw.githubusercontent.com/MH4GF/my-textlint/main/.textlintrc)" > .textlintrc
       - name: Execute textlint for articles
         run: |
-          npx textlint "articles/*.md" >> .textlint.log
+          npx textlint -f checkstyle "articles/*.md" >> .textlint.log
 
       - name: Run reviewdog
         # textlintで文章上のミスがあった場合のみ、reviewdogを実行させるようにする
