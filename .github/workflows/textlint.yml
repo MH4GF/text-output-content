@@ -34,9 +34,12 @@ jobs:
       - name: Install textlint
         run:  'npm install --save-dev textlint textlint-rule-preset-ja-technical-writing textlint-rule-prh'
 
+      - name: Get .textlintrc
+        run: |
+          echo "$(curl -fsSL https://raw.githubusercontent.com/MH4GF/my-textlint/main/.textlintrc)" > .textlintrc
       - name: Execute textlint for articles
         run: |
-          npx textlint -c https://raw.githubusercontent.com/MH4GF/my-textlint/main/.textlintrc "articles/*.md" >> .textlint.log
+          npx textlint "articles/*.md" >> .textlint.log
 
       - name: Run reviewdog
         # textlintで文章上のミスがあった場合のみ、reviewdogを実行させるようにする
