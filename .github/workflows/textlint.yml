@@ -36,7 +36,7 @@ jobs:
 
       - name: Execute textlint for articles
         run: |
-          npx textlint -f -c https://raw.githubusercontent.com/MH4GF/my-textlint/main/.textlintrc "articles/*.md" >> .textlint.log
+          npx textlint -c https://raw.githubusercontent.com/MH4GF/my-textlint/main/.textlintrc "articles/*.md" >> .textlint.log
 
       - name: Run reviewdog
         # textlintで文章上のミスがあった場合のみ、reviewdogを実行させるようにする
