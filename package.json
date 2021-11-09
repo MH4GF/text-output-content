@@ -6,8 +6,7 @@
   "scripts": {
     "new": "zenn new:article",
     "dev": "zenn preview",
-    "lint": "textlint articles/*.md",
-    "lint:checkstyle": "textlint -f checkstyle articles/*.md",
+    "lint": "textlint",
     "fetch-textlintrc": "echo $(curl -fsSL https://raw.githubusercontent.com/MH4GF/my-textlint/main/.textlintrc) > .textlintrc",
     "prepare": "yarn fetch-textlintrc"
   },

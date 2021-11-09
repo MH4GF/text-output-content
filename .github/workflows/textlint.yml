@@ -31,12 +31,16 @@ jobs:
           restore-keys: |
             node-
 
-      - name: npm install
-        run:  'npm install'
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v11.5
+
+      - name: yarn install
+        run:  'yarn install'
 
       - name: Execute textlint for articles
         run: |
-          npm run lint:checkstyle >> .textlint.log
+          yarn lint ${{ steps.changed-files.outputs.all_modified_files }} -f checkstyle -o .textlint.log
 
       - name: Run reviewdog
         # textlintで文章上のミスがあった場合のみ、reviewdogを実行させるようにする
