@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "new": "zenn new:article"
+    "new": "zenn new:article",
+    "dev": "zenn preview"
   },
   "repository": {
     "type": "git",
