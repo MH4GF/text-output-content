@@ -1,0 +1,11 @@
+{
+	"name": "Existing Docker Compose (Extend)",
+	"dockerComposeFile": [
+		"../docker-compose.yml"
+	],
+	"service": "app",
+	"workspaceFolder": "/workspace",
+	"settings": {},
+	"extensions": [],
+	"postCreateCommand": "npm install",
+}

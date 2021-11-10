@@ -4,7 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "new": "zenn new:article"
+    "new": "zenn new:article",
+    "dev": "zenn preview",
+    "lint": "textlint",
+    "fetch-textlintrc": "echo $(curl -fsSL https://raw.githubusercontent.com/MH4GF/my-textlint/main/.textlintrc) > .textlintrc",
+    "prepare": "yarn fetch-textlintrc"
   },
   "repository": {
     "type": "git",
@@ -17,7 +21,10 @@
     "url": "https://github.com/MH4GF/text-output-content/issues"
   },
   "homepage": "https://github.com/MH4GF/text-output-content#readme",
-  "dependencies": {
-    "zenn-cli": "^0.1.81"
+  "devDependencies": {
+    "textlint": "^12.0.2",
+    "textlint-rule-preset-ja-technical-writing": "^7.0.0",
+    "textlint-rule-prh": "^5.3.0",
+    "zenn-cli": "^0.1.98"
   }
 }

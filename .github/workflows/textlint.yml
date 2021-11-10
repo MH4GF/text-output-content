@@ -31,15 +31,16 @@ jobs:
           restore-keys: |
             node-
 
-      - name: Install textlint
-        run:  'npm install --save-dev textlint textlint-rule-preset-ja-technical-writing textlint-rule-prh'
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v11.5
 
-      - name: Get .textlintrc
-        run: |
-          echo "$(curl -fsSL https://raw.githubusercontent.com/MH4GF/my-textlint/main/.textlintrc)" > .textlintrc
+      - name: yarn install
+        run:  'yarn install'
+
       - name: Execute textlint for articles
         run: |
-          npx textlint -f checkstyle "articles/*.md" >> .textlint.log
+          yarn lint ${{ steps.changed-files.outputs.all_modified_files }} -f checkstyle -o .textlint.log
 
       - name: Run reviewdog
         # textlintで文章上のミスがあった場合のみ、reviewdogを実行させるようにする
