@@ -7,5 +7,4 @@
 	"workspaceFolder": "/workspace",
 	"settings": {},
 	"extensions": [],
-	"postCreateCommand": "npm install",
 }
