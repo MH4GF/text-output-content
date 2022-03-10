@@ -5,7 +5,10 @@
 	],
 	"service": "app",
 	"workspaceFolder": "/workspace",
-	"settings": {},
-	"extensions": [],
-	"postCreateCommand": "npm install",
+	"settings": {
+		"textlint.autoFixOnSave": true,
+	},
+	"extensions": [
+		"taichi.vscode-textlint",
+	],
 }
