@@ -3,7 +3,7 @@ title: "GitHub Apps / GitHub Actionsを使って別のリポジトリにファ�
 emoji: "🐙"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: [github,githubactions]
-published: false
+published: true
 ---
 
 # やりたいこと
