@@ -1,5 +1,5 @@
 ---
-title: "graphql-rubyで入力値の柔軟なバリデーションを実現する@constriant directiveを導入する"
+title: "graphql-rubyで入力値の柔軟なバリデーションを実現する@constraint directiveを導入する"
 emoji: "✨"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: [graphql,graphqlruby]
