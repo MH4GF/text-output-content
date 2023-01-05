@@ -3,7 +3,7 @@ title: "graphql-rubyで入力値の柔軟なバリデーションを実現する
 emoji: "✨"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: [graphql,graphqlruby]
-published: false
+published: true
 ---
 
 この記事は、GraphQLのInput Objectのバリデーションを実現する@constraint directiveの紹介と、graphql-rubyで実装する方法を説明します。
