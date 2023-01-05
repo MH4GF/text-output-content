@@ -6,7 +6,7 @@ topics: [graphql,graphqlruby]
 published: false
 ---
 
-この記事は、GraphQLのInput Objectのバリデーションを実現する@constraint directiveの紹介と、graphql-rubyで実装する方法を紹介します。
+この記事は、GraphQLのInput Objectのバリデーションを実現する@constraint directiveの紹介と、graphql-rubyで実装する方法を説明します。
 
 ---
 
@@ -72,7 +72,7 @@ export function CreateBookInputSchema(): z.ZodObject<Properties<CreateBookInput>
 
 https://github.com/MH4GF/graphql-ruby-constraint-directive
 
-以下のようなschema, mutationが実装されていることを想定します。
+利用方法を紹介します。以下のようなschema, mutationが実装されていることを想定します。
 
 ```ruby
 module Types
@@ -162,7 +162,22 @@ end
 }
 ```
 
-ミューテーションクラスのresolveメソッドには一切手を加えていないため、個々のミューテーションではバリデーションのことは気にせず値の処理にだけ集中できます。
+graphql-rubyはコードファーストでGraphQLサーバーを構築するため、上記の実装により以下のスキーマファイルが生成されます。
+
+```graphql
+input CreateBookInput {
+  title: String! @constraint(minLength: 1, maxLength: 200)
+  price: Int! @constraint(min: 0)
+}
+
+type Mutation {
+  createBook(
+    input: CreateBookInput!
+  ): CreateBookPayload
+}
+```
+
+このように、簡単にバリデーションを実装することができました。ミューテーションクラスのresolveメソッドには一切手を加えていないため、個々のミューテーションではバリデーションのことは気にせず値の処理にだけ集中できます。
 
 # まとめ
 
