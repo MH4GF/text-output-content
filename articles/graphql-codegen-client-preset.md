@@ -30,7 +30,11 @@ client-presetを利用することで以下のメリットを享受できます�
 
 https://the-guild.dev/graphql/codegen/plugins/presets/preset-client
 
-client-presetは「より良い開発体験・より小さなバンドルサイズ・より強い型・またベストプラクティスに簡単に追従できるようにする、全てのGraphQLクライアントのための新しいユニークなプリセット」と紹介されており、中身は以下のプラグインの組み合わせとなっています。
+client-presetは「より良い開発体験・より小さなバンドルサイズ・より強い型・またベストプラクティスに簡単に追従できるようにする、全てのGraphQLクライアントのための新しいユニークなプリセット」と紹介されています。
+
+[GraphQL Code Generatorの React / Vue 向けガイド](https://the-guild.dev/graphql/codegen/docs/guides/react-vue)は現在ではclient-presetを前提とした紹介となっており、またcodegen.tsを対話的に生成する `graphql-codegen init` コマンドでもデフォルトでclient-presetが使われるようになっています。このプリセットをデファクトスタンダードにする、という意志を感じられます。
+
+その中身は以下のプラグインの組み合わせとなっています。
 
 - typescript
 - typed-document-node
@@ -71,7 +75,7 @@ import { graphql } from './gql/gql'; // 生成されたコードから `graphql(
 import Film from './Film';
 
 // GraphQLで取得したい内容を定義
-// ここで定義した内容はTypedDocumentNode(後述)として型付けされる
+// ここで定義した内容はTypedDocumentNode(TypeScriptの型付けがされたDocumentNode)となる
 const allFilmsWithVariablesQueryDocument = graphql(/* GraphQL */ `
   query allFilmsWithVariablesQuery($first: Int!) {
     allFilms(first: $first) {
@@ -99,9 +103,11 @@ export default App;
 ```
 
 このように、その場で定義したDocumentNodeをuseQueryに渡すだけで型安全なdataやvariablesを扱えるようになります。useQueryのジェネリクスに型を渡す必要もないため、特定クライアント向けプラグインが生成していたカスタムフックが不要になります。
-例えばtypescript-react-apolloの場合`useXXXQuery`と`useLazyXXXQuery`の両方を生成していたため、その2つが丸ごとなくなるというのはバンドルサイズの削減に大きく貢献するでしょう。
+例えばtypescript-react-apolloの場合`useXXXQuery`と`useLazyXXXQuery`の両方を生成していたため、その2つが丸ごとなくなるというのはバンドルサイズの削減に大きく貢献するでしょう。またimportするのは `graphql()` だけで良いので、near-operation-file-presetも不要になります。
 
-これはどのように実現されているのでしょうか。生成されるコードを見てみましょう。
+TypedDocumentNodeの利点はもう一つあります。生成されたカスタムフックを使わずにクエリ実行をしたい状況はあり（Next.jsのgetServerSideProps内など）、その際はResult型/Variables型/documentオブジェクトを実装者がクライアントへ渡すコードを書くことになりますが、その際**Result型とdocumentオブジェクトの内容が全く違ってもコンパイルエラーにはなりません**。実行時にならないとミスに気づけないためバグの原因になりがちですが、TypedDocumentNodeを使えばそういった型の設定ミスもなくなるのです。
+
+さて、この自動的な型付けはどのように実現されているのでしょうか。生成されるコードを見てみましょう。
 codegen.tsで出力場所として設定した`./src/gql/`には以下のコードが含まれています。
 
 - gql.ts ... 上記で利用したgraphql()が含まれている
@@ -161,12 +167,12 @@ export function graphql(source: string) {
 export type DocumentType<TDocumentNode extends DocumentNode<any, any>> = TDocumentNode extends DocumentNode<  infer TType,  any>  ? TType  : never;
 ```
 
-クエリ文字列をキーに `types.AllFilmsWithVariablesQueryDocument` のようなTypedDocumentNodeが値となる `document` オブジェクトと、何やら力強いオーバーロード関数生成されています。
-先ほどのApp.tsxでFilmのリストを取得するクエリを書いたように、ユーザーが `graphql()` 関数を使ってオペレーションを記述するとGraphQL Code Generatorはこの二つを生成します。 `graphql()` 関数が行うことは引数の文字列リテラルでdocumentを呼び出すだけです。
-一見ギョッとしますが、ユーザーが記述した文字列リテラルをキーに対応する型定義を呼び出すだけ、という素朴な実装で実現されていることがわかります。
+クエリ文字列をキーに `types.AllFilmsWithVariablesQueryDocument` のようなTypedDocumentNodeが値となる `document` オブジェクトと、何やら力強いオーバーロード関数 `graphql()` が生成されています。
+先ほどのApp.tsxでFilmのリストを取得するクエリを書いたように、ユーザーが `graphql()` 関数を使ってオペレーションを記述するとGraphQL Code Generatorはこの二つを生成します。 `graphql()` 関数が内部で行うことは引数の文字列リテラルでdocumentを呼び出すだけです。
+一見生成されたコードにはギョッとしますが、ユーザーが記述した文字列リテラルをキーに対応する型定義を呼び出すだけ、という素朴な実装で実現されていることがわかります。
 
 ちなみにこちらの生成コードのコメントにも記載されている通り、 `document` オブジェクトはTree Shakingが効かない・コードのminifyができない・未使用コードの削除ができないなどの問題を抱えているため、Productionでは同梱のbabelプラグインを利用することが推奨されています。
-サンプルリポジトリで実際に設定したコミットはこちらです: https://github.com/MH4GF/graphql-codegen-client-preset-example/commit/5fa53dd1746572de8370f99682c544653c24327a
+サンプルリポジトリで実際に設定したコミットはこちらです。バンドルサイズの変化も記載しています。 https://github.com/MH4GF/graphql-codegen-client-preset-example/commit/5fa53dd1746572de8370f99682c544653c24327a
 
 
 ## fragment-maskingによりFragment Colocationの強制が可能になる
@@ -225,7 +231,7 @@ export type FilmItemFragment = {
 } & { " $fragmentName"?: "FilmItemFragment" };
 ```
 
-このように、fragment-maskingを有効にすると、クエリの返却型はオペレーションで定義したグラフ構造ではなくそのままでは扱えない値にマスキングされます。  
+このようにfragment-maskingを有効にするとクエリの返却型にも手が入り、オペレーションで定義したグラフ構造ではなくそのままでは扱えない値にマスキングされます。  
 そしてuseFragmentが型の変換だけを担っているというのは、生成された実装を見るとわかります。
 ```typescript:src/gql/fragment-masking.ts
 // return non-nullable if `fragmentType` is non-nullable
@@ -258,8 +264,8 @@ export function useFragment<TType>(
 
 少々長いオーバーロードになっていますが、注目すべきは最下部の実装の中身です。行なっていることは引数として渡されたfragmentTypeをreturnしているだけです。つまりuseFragmentは実行時には何も行わず、開発時の型情報の変換のみを行なっていることがわかります。
 
-Reactを書いている方は気になったかもしれませんが、`useFragment`はReact Hooksではありません。ESLintのルールに引っかかるなどを避けたい場合は`getFragmentData`などに命名変更ができます。^[https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#the-usefragment-helper]
-個人的には、この関数をNext.jsのgetServerSideProps内などコンポーネント以外の箇所で利用する可能性を考えると、 `use` がつく関数名は誤解を招くため命名変更する方が無難かなと考えています。
+Reactを書いている方は気になったかもしれませんが、**`useFragment`はReact Hooksではありません**。ESLintのルールに引っかかる場合などを避けるために`getFragmentData`などに命名変更ができます。^[https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#the-usefragment-helper]
+個人的には、この関数をコンポーネント以外の箇所で利用する可能性を考えると `use` がつく関数名は誤解を招くため命名変更する方が無難かなと考えています。
 
 
 
@@ -269,7 +275,7 @@ Reactを書いている方は気になったかもしれませんが、`useFragm
 
 ---
 
-まずStorybookやJestなどでモックデータを用意したい場合です。以下のようにするとFragmentTypeを満たすオブジェクトを作ることができます。
+まずStorybookやJestなどでモックデータを用意したい場合です。以下のように `makeFragmentData` を使うとFragmentTypeを満たすオブジェクトを作ることができます。
 
 ```typescript
 import { makeFragmentData } from "./gql/fragment-masking";
@@ -287,8 +293,27 @@ const FilmList = (props: { films: ReadonlyArray<FragmentType<typeof FilmFragment
 }
 ```
 
-先ほどのApp.tsxの例ではFilmの配列をmapしてFilmコンポーネントに渡していましたが、keyには`film-${i}`のようにインデックスが指定されていました。Reactのお作法としてはデータ内に含まれる一意なIDを使うべきですが、コンポーネントの外側からクエリのデータにアクセスできないためにインデックスを使っています。
-useFragmentでは配列を受け取ることもできるので、可能であればこのようにリストを返すコンポーネントとして用意しIDをキーとして利用するのがベターかなと思われます。
+:::details Reactのkeyと組み合わせる際のTips
+
+先ほどのApp.tsxの例ではFilmの配列をmapしてFilmコンポーネントに渡していましたが、keyには`film-${i}`のようにインデックスが指定されていました。
+
+```typescript:App.tsx
+function App() {
+  const { data } = useQuery(allFilmsWithVariablesQueryDocument, { variables: { first: 10 } });
+  return (
+    <div className="App">
+      {data && <ul>{data.allFilms?.edges?.map((e, i) => e?.node && <Film film={e?.node} key={`film-${i}`} />)}</ul>}
+    </div>
+  );
+}
+```
+
+Reactのお作法としてはデータ内に含まれる一意なIDを使うべきですが、fragment-maskingを使うとコンポーネントの外側からクエリのデータにアクセスできません。そのためにインデックスを使わなければなりませんでした。
+
+今回のようにuseFragmentでは配列を受け取ることもできるので、可能であればこのようにリストを返すコンポーネントとして用意しIDをキーとして利用するのがベターかなと思われます。
+
+:::
+
 
 ---
 
@@ -308,7 +333,7 @@ const Film = (props: Props) => {
 ```
 
 これはfragment-masking利用下ではしづらくなったというのが事実かなと思います。しかし筆者はそこまで悪いことだとは考えていません。
-例えばここで新たに追加したい `anotherData` がサーバーから返ってきたデータをもとに計算された値なのであれば、フロントエンドで計算するのではなく、スキーマのフィールドに追加し計算をバックエンド側で肩代わりする方が望ましいです。
+例えばここで新たに追加したい `anotherData` がサーバーから返ってきたデータをもとに計算された値なのであれば、フロントエンドで計算するのではなく、スキーマのフィールドに追加し計算をバックエンド側で肩代わりする方が望ましいです。メルペイさんの記事から引用します。
 
 > Componentを構成するとき、1つのUI要素を表示するために複数のGraphQLのフィールドを組み合わせる必要がある場合、その処理をバックエンド側で肩代わりするcomputed fieldを導入することを検討してください。
 
@@ -319,7 +344,7 @@ fragment-maskingによってクライアントサイドでのcomputed fieldの�
 
 ---
 いくつかのユースケースを見てきましたが、fragment-maskingの制約は実用に足るのではないかと筆者は判断しています。筆者は設定より規約の考え方が好きで、多少の学習コストはあれど実装者が実装方法に悩まなくなるのは大きなメリットだと思っています。
-GraphQLクライアントのRelayでは厳密なFragment Colocationの強制ができますが、Apolloやurqlではこれまでは難しいというのが現状でした。near-operation-file-presetは生成コードをオペレーション定義の近くに置いてくれるだけで、実装者としてはfragmentとして定義せずに自前でコンポーネントのprops型を書いてクエリのデータを受け取りこともできるので、強制することはできません。client-presetを使うとクエリのデータを使いたい場合はuseFragmentを使うしかなくなるため、それが禁止されるのです。
+GraphQLクライアントのRelayでは厳密なFragment Colocationの強制ができますが、Apolloやurqlではこれまでは難しいというのが現状でした。near-operation-file-presetは生成コードをオペレーション定義の近くに置いてくれるだけで、実装者としてはfragmentとして定義せずに自前でコンポーネントのprops型を書いてクエリのデータを受け取りこともできるので、強制することはできません。fragment-maskingを使うとクエリのデータを扱いたい時はuseFragmentを使うしかなくなるため、それが禁止されるのです。
 
 GraphQL Code GeneratorのGitHubリポジトリでは、fragment-maskingのQ&Aを公開しています。気になる質問が他にある方はここで聞いてみるのも良いでしょう。
 
@@ -332,44 +357,15 @@ https://github.com/dotansimha/graphql-code-generator/discussions/8554
 
 ### その他のプラグインを利用している場合はnear-operation-fileプリセットを併用する必要はある
 
+near-operation-file-presetは、その名の通りオペレーション定義の近くに生成コードを配置してくれるプリセットです。コードの見通しが良くなるほか、生成コードの分割によるバンドル後のファイルチャンクの最適化にも大きく貢献します。以下の記事が詳しいです。
+
+https://hiroppy.me/blog/nextjs-chunk-optimization/
+
+client-presetを使うことで、コンポーネントのTypeScriptファイルに直接記述したドキュメントをそのまま利用できるためオペレーション定義に関してはnear-operation-file-presetは不要になる、と前述しました。しかしそれはオペレーション定義だけであり、[typescript-msw](https://the-guild.dev/graphql/codegen/plugins/typescript/typescript-msw)や[typescript-mock-data](https://github.com/ardeois/graphql-codegen-typescript-mock-data)など別の用途でもコード生成を利用する場合は今まで通りnear-operation-file-presetを利用しファイル分割した方が良いでしょう。
+
 ### typed-document-nodeが `.graphql` ファイルによるオペレーション定義に対応していない
 
 TODO: near-operation-preset使ってるけどいいのかここで聞いてみてる
 https://github.com/dotansimha/graphql-code-generator/issues/8296#issuecomment-1399212141
 
 ### 今後のアップデートによって設定が変わる可能性がある
-
-
-# メモ
-
-- v3ロードマップで推されている主要機能
-- 今までのgraphql-codegenでの開発体験と大きく変わるが、個人的には良い方向なのではと思っている
-- いくつかのプラグインの組み合わせ
-  - typescript
-  - typed-document-node
-  - fragment-masking
-- メリット
-  - 特定のクライアントライブラリのためのコードが不要であり、documentをuseQueryに渡せばそれだけで返却型で型付けされる（これはtyped-document-nodeの機能）
-    - TODO: どういう仕組み？graphql.jsの機能？
-  - documentはgraphql()を使って書くが、それがそのまま使えるためnear-operation-fileが不要
-    - 本当に不要？
-    - ただし他のプラグインを利用する場合は必要になる（mswやtypescript-mock-dataなど）
-  - fragment-maskingがデフォルトで有効になっており、relayのような制約の強いfragment colocationが可能
-- typed-document-node
-  - documentをgraphql()として書くと、codegenは力技のような関数オーバーロードを作成し型付けされたdocumentを返す
-  - これにより、useQueryの引数にdocumentを渡すだけで型付けされたデータが返ってくる
-  - graphql定義は。graphqlファイルに書きたい派だったが無理なんですかね？
-  - typed-document-nodeがない場合、hookを使えない場所（getServerSidePropsなど）でクエリを実行したい場合は生成型とドキュメントを手動で渡すみたいなことをしていたが、型とドキュメントが一致しなくてもエラーにならず、ミスが起きがちだった
-  - typed-document-nodeにすれば型を推論してくれるため、そのミスは起きにくくなる
-- fragment-masking
-  - useQueryのresult.dataの型がマスキングされ、useFragmentを通さないとデータを参照できなくなる
-    - useFragmentはgraphql()で書いたdocumentを使う
-  - かなり制約として強いが、fragmentの使い方を統一できるので良さそうか
-    - 微妙な点として、配列をコンポーネントにmapする際keyにobject.idが使えずindexを使うことになる
-      - やりようはあるんですかね？
-  - 使い方
-    - `FragmentType<typeof myDocument>`のように使う
-    - テストデータを作りたい場合は`makeFragmentData({ id: 'foo'})`のように使う
-    - listのコンポーネントの場合は`ReadonlyArray<FragmentType<typeof myDocument>>` みたいな受け取り方になる
-- TODO: 移行をどのように進めるか？
-- TODO: まだexperimentalなんだっけ？
