@@ -1,9 +1,9 @@
 ---
 title: "GraphQL Code Generator v3 Roadmapで推されているclient-presetを紹介する"
-emoji: "🔥"
+emoji: "👀"
 type: "idea" # tech: 技術記事 / idea: アイデア
 topics: [graphql, graphqlcodegen]
-published: false
+published: true
 ---
 
 こんにちは。皆さんは[GraphQL Code Generator](https://the-guild.dev/graphql/codegen)を利用していますか？
