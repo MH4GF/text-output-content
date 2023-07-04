@@ -2,7 +2,7 @@
 title: "StoryBook v7.0 へのアップデートで非推奨になった型"
 emoji: "✨"
 type: "tech" # tech: 技術記事 / idea: アイデア
-topics: []
+topics: [storybook]
 publication_name: route06
 published: false
 ---
