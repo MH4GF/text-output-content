@@ -4,7 +4,7 @@ emoji: "✨"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: [storybook]
 publication_name: route06
-published: false
+published: true
 ---
 
 関わっているプロダクトで StoryBook を v6.5 から v7 にアップデートしました。v7 ではいくつかの型や設定が非推奨になっており、どのように移行すればよいのか・なぜ非推奨になったのかを調べていました。その非推奨になった型を見ていきます。
