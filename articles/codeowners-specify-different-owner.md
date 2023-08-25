@@ -3,6 +3,7 @@ title: "GitHubのCODEOWNERSで一部サブディレクトリだけ別のオー�
 emoji: "🎧"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: [github]
+publication_name: route06
 published: true
 ---
 
