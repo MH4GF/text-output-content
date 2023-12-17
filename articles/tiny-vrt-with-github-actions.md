@@ -27,7 +27,7 @@ Web アプリケーション開発での VRT 導入は、ちゃんと運用す�
 - **スクリーンショットの都度撮影と比較**：過去のスクリーンショットをキャッシュや外部ストレージに保存せず、毎回比較元・比較先両方のスクリーンショットを撮影し比較します。これにより、比較元のスクリーンショットが存在しないという問題が解消されますが、実行時間の増加はトレードオフとなります。
 - **Preview Environment での VRT 実施**：Pull Request に紐づく Preview Environment へのデプロイをトリガーとして VRT を実施します。今回は Vercel を使用する場合を想定します。これにより CI 上でのビルドや dev server の設定を考慮する必要がありません。
 
-最軽量を目指しているため、いくつかのトレードオフが存在します。今回の例ではVercel へのデプロイ・PlaywrightやGitHub Actions の使用という前提条件があり、すべてのプロダクトに適用可能なわけではありません。しかし、他のツールを使用場合であっても同様のアプローチを実現できるかと思います。
+最軽量を目指しているため、いくつかのトレードオフが存在します。今回の例では Vercel へのデプロイ・Playwright や GitHub Actions の使用という前提条件があり、すべてのプロダクトに適用可能なわけではありません。しかし、他のツールを使用場合であっても同様のアプローチを実現できるかと思います。
 
 ## 実装
 
@@ -221,7 +221,7 @@ Playwright の Docker イメージを使っています。GitHub Actions デフ�
     BASE_URL: https://example.com/
 ```
 
-まず本番環境のスクリーンショットを撮影します。`test:vrt:screenshots` の中身は `playwright test --update-snapshots` と同じで、スクリーンショットが撮影できたら成功となります。  
+まず本番環境のスクリーンショットを撮影します。先ほど package.json に設定した `test:vrt:screenshots` の中身は `playwright test --update-snapshots` です。これはスクリーンショットが撮影できたら成功となります。  
 この指定の方法では、例えば Feature Branch A から Feature Branch B へのマージをする PR などのようなブランチ戦略には対応できず、常に本番環境との比較になります。ただ今回は最軽量を目指すため複雑な仕組みは入れません。
 
 #### Preview 環境のスクリーンショット撮影
@@ -232,7 +232,7 @@ Playwright の Docker イメージを使っています。GitHub Actions デフ�
     BASE_URL: ${{ github.event.deployment_status.environment_url }}
 ```
 
-次に Preview 環境のスクリーンショットを撮影します。`test:vrt:compare` の中身は `playwright test` と同じで、差分があった場合は失敗します。
+次に Preview 環境のスクリーンショットを撮影します。`test:vrt:compare` の中身は `playwright test` です。差分があった場合は失敗します。
 
 #### 失敗時のスクリーンショットアップロード
 
