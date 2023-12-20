@@ -70,10 +70,10 @@ export default defineConfig({
 次に、テストファイル `./src/__vrt__/vrt.test.ts` を作成します：
 
 ```ts:./src/__vrt__/vrt.test.ts
-import type { Page, TestInfo } from '@playwright/test'
+import type { Page } from '@playwright/test'
 import { test, expect } from '@playwright/test'
 
-const screenshot = async (page: Page, testInfo: TestInfo, targetPage: TargetPage) => {
+const screenshot = async (page: Page, targetPage: TargetPage) => {
   await page.goto(targetPage.path)
   // Playwright では、toHaveScreenshot でスクリーンショットによるスナップショットができる
   await expect(page).toHaveScreenshot({ fullPage: true })
@@ -92,8 +92,8 @@ const targetPages: TargetPage[] = [
 ]
 
 for (const targetPage of targetPages) {
-  test(targetPage.name, async ({ page }, testInfo) => {
-    await screenshot(page, testInfo, targetPage)
+  test(targetPage.name, async ({ page }) => {
+    await screenshot(page, targetPage)
   })
 }
 ```
