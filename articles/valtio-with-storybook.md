@@ -4,6 +4,7 @@ emoji: "✨"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["storybook", "valtio", "react"]
 published: true
+publication_name: route06
 ---
 
 状態管理ライブラリに [valtio](https://valtio.pmnd.rs/) を採用した React のプロジェクトで Storybook を利用した際に、Story ごとに状態を設定する方法を紹介します。
