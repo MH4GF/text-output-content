@@ -1,6 +1,6 @@
 ---
 title: "Liam ERDで綺麗でインタラクティブなER図を自動生成する"
-emoji: "📑"
+emoji: "👾"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["database", "er図", "oss", "LiamERD"]
 published: true
