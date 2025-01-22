@@ -4,6 +4,7 @@ emoji: "👾"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["database", "er図", "oss", "LiamERD"]
 published: true
+publication_name: route06
 ---
 
 この記事は、Liam ERDのブログ [Introducing Liam ERD](https://liambx.com/blog/liam-erd-introduction) からの翻訳記事です。
